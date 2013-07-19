@@ -70,6 +70,15 @@ require_once $mageFilename;
 
 #Varien_Profiler::enable();
 
+$timerName = 'Loading page';
+Varien_Profiler::enable();
+Varien_Profiler::start($timerName);
+
+
+$timerName = 'Dispatch';
+Varien_Profiler::enable();
+Varien_Profiler::start($timerName);
+
 if (isset($_SERVER['MAGE_IS_DEVELOPER_MODE'])) {
     Mage::setIsDeveloperMode(true);
 }

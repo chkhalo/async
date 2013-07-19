@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout version="0.1.0">
+    <catalog_category_view>
+<!--        <reference name="content">
+            <block type="los312_async/slow" name="content_slow" before="-" template="los312_async/slow.phtml"/>
+        </reference>
+        <reference name="left">
+            <block type="los312_async/slow" name="content_slow" before="-" template="los312_async/slow.phtml"/>
+        </reference>
+        <reference name="right">
+            <block type="los312_async/slow" name="content_slow" before="-" template="los312_async/slow.phtml"/>
+        </reference>
+
+        <reference name="content">
+            <action method="setAsync">
+            </action>
+        </reference>
+        <reference name="left">
+            <action method="setAsync">
+            </action>
+        </reference>
+        <reference name="right">
+            <action method="setAsync">
+            </action>
+        </reference>-->
+    </catalog_category_view>
+
+</layout>

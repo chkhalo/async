@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<Los312_Async>
+			<active>true</active>
+			<codePool>local</codePool>
+		</Los312_Async>
+	</modules>
+</config>
