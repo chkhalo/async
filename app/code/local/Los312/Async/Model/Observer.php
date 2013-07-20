@@ -7,21 +7,19 @@ class Los312_Async_Model_Observer
     protected $_asyncBlockList = array();
     protected $_adapter = null;
 
+    public function getAdapter()
+    {
 
-    public function getAdapter(){
-
-        //$path = 'los312_async/adapter_'.Mage::getConfig('los312_async/adapter');
-        $this->_adapter = Mage::getModel('los312_async/adapter_curl');
+        $this->_adapter = Mage::getModel(Mage::getConfig('los312_async/los312_async_advanced/adapter'));
         return $this->_adapter;
-
     }
 
-    /*Render one block for curl request*/
+    /* Render one block for curl request */
+
     public function asyncBlockRender($observer)
     {
 
-        $this ->getAdapter()->blockRender();
-
+        $this->getAdapter()->blockRender();
     }
 
     public function asyncRenderBlocks($observer)
@@ -40,12 +38,11 @@ class Los312_Async_Model_Observer
                 $this->_asyncBlockList[$block->getCacheKey()] = $block;
             }
         }
-        if(!empty($this->_asyncBlockList)){
+        if (!empty($this->_asyncBlockList)) {
 
-            $this ->getAdapter()->sendBlocksToRemoteRender($this->_asyncBlockList);
+            $this->getAdapter()->sendBlocksToRemoteRender($this->_asyncBlockList);
             //$this -> sendBlocksToRemoteRender();
         }
-
     }
 
     public function asyncInsertBlocks($observer)
@@ -55,7 +52,7 @@ class Los312_Async_Model_Observer
         if ($asyncBlockId) {
             return false;
         }
-        if(empty($this->_asyncBlockList)){
+        if (empty($this->_asyncBlockList)) {
             return false;
         }
 
@@ -69,7 +66,7 @@ class Los312_Async_Model_Observer
 
 
         //$blocksHtml = $this->getRemoteRendedBlocks();
-        $blocksHtml = $this -> getAdapter() -> getRemoteRendedBlocks($this->_asyncBlockList);
+        $blocksHtml = $this->getAdapter()->getRemoteRendedBlocks($this->_asyncBlockList);
 
         foreach ($this->_asyncBlockList as $identifer => $block) {
             Mage::log('!  Async Block Insert by Key:' . $identifer);
@@ -78,18 +75,18 @@ class Los312_Async_Model_Observer
                 $html = $blocksHtml[$identifer];
             }
             $body = str_replace('{{' . $identifer . '}}', $html, $body);
-
         }
 
         Varien_Profiler::stop('asyncInsertBlocks');
         $time = Varien_Profiler::fetch('asyncInsertBlocks', 'sum');
-	Mage::log('All time of asyncInsertBlocks time::' . $time);
-	Varien_Profiler::disable();
+        Mage::log('All time of asyncInsertBlocks time::' . $time);
+        Varien_Profiler::disable();
 
         $response->setBody($body);
     }
 
-    public function asyncProfilerStop(){
+    public function asyncProfilerStop()
+    {
         $timerName = 'Loading page';
         Varien_Profiler::stop($timerName);
 
@@ -97,13 +94,14 @@ class Los312_Async_Model_Observer
 
         $asyncBlockId = Mage::app()->getRequest()->getParam('async_block_id');
         if (!$asyncBlockId) {
-            Mage::log($timerName.'::time::' . $time);
+            Mage::log($timerName . '::time::' . $time);
             Mage::log('=========================================End of page async================================================');
         } else {
-            Mage::log('|    '.$timerName.'::time::' . $time);
+            Mage::log('|    ' . $timerName . '::time::' . $time);
         }
 
-	Varien_Profiler::disable();
+        Varien_Profiler::disable();
     }
 
 }
+

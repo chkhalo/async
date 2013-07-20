@@ -57,10 +57,49 @@
                 </observers>
             </http_response_send_before>
         </events>
+        <async_adapters>
+            <curl>
+                <name>Curl</name>
+                <class>los312_async/adapter_curl</class>
+            </curl>
+            <!--             <pcntl>
+                <name>Pcntl</name>
+                <class>los312_async/adapter_pcntl</class>
+            </pcntl>-->
+        </async_adapters>
     </global>
     <default>
         <los312_async>
             <adapter>curl</adapter>
         </los312_async>
+        <los312_async>
+            <los312_async_design>
+                <loader_image>images/loader.gif</loader_image>
+            </los312_async_design>
+            <los312_async_advanced>
+                <adapter>los312_async/adapter_curl</adapter>
+            </los312_async_advanced>
+        </los312_async>
     </default>
+    <adminhtml>
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <los312_async translate="title" module="los312_async">
+                                            <title>Async Settings</title>
+                                        </los312_async>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+    </adminhtml>
 </config>
