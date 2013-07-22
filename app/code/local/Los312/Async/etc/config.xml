@@ -33,27 +33,22 @@
         <events>
             <controller_action_layout_render_before>
                 <observers>
-                    <los312_async_check>
+                    <los312_async_send_blocks>
                         <class>Los312_Async_Model_Observer</class>
-                        <method>asyncBlockRender</method>
-                    </los312_async_check>
+                        <method>sendBlocksToAsyncRendering</method>
+                    </los312_async_send_blocks>
                     <los312_async_render>
                         <class>Los312_Async_Model_Observer</class>
-                        <method>asyncRenderBlocks</method>
+                        <method>asyncBlockRender</method>
                     </los312_async_render>
                 </observers>
             </controller_action_layout_render_before>
             <http_response_send_before>
                 <observers>
-                    <los312_async_insert>
+                    <los312_async_html>
                         <class>Los312_Async_Model_Observer</class>
-                        <method>asyncInsertBlocks</method>
-                    </los312_async_insert>
-
-                    <los312_async_profiler_stop>
-                        <class>Los312_Async_Model_Observer</class>
-                        <method>asyncProfilerStop</method>
-                    </los312_async_profiler_stop>
+                        <method>replaceAsyncBlockPlaceholdersToHtml</method>
+                    </los312_async_html>
                 </observers>
             </http_response_send_before>
         </events>
@@ -78,6 +73,7 @@
             </los312_async_design>
             <los312_async_advanced>
                 <adapter>los312_async/adapter_curl</adapter>
+                <waiting_time_limit>30</waiting_time_limit>
             </los312_async_advanced>
         </los312_async>
     </default>
