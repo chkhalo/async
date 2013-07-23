@@ -2,106 +2,102 @@
 
 class Los312_Async_Model_Observer
 {
+    
 
     protected $_asyncBlocksHtml = array();
     protected $_asyncBlockList = array();
     protected $_adapter = null;
-
+    
+    const CACHE_LIMIT = 300;
+    const CACHE_PREFIX = 'los312_async_';
+    
     public function getAdapter()
     {
-
-        $this->_adapter = Mage::getModel(Mage::getConfig('los312_async/los312_async_advanced/adapter'));
+        $modelName = Mage::getStoreConfig('los312_async/los312_async_advanced/adapter');
+        $this->_adapter = Mage::getModel($modelName);        
         return $this->_adapter;
-    }
+    }    
+    
 
-    /* Render one block for curl request */
-
+    /* Render one block if the remoute request */
     public function asyncBlockRender($observer)
     {
+        $asyncBlockIdentifer = Mage::app()->getRequest()->getParam('async_block_identifer');
+        /*If request async*/
+        if ($asyncBlockIdentifer) {
+            Mage::getModel('los312_async/render')->renderBlock($asyncBlockIdentifer);            
+        }        
 
-        $this->getAdapter()->blockRender();
     }
+    
 
-    public function asyncRenderBlocks($observer)
+
+    public function sendBlocksToAsyncRendering($observer)
     {
-
-        $asyncBlockId = Mage::app()->getRequest()->getParam('async_block_id');
-        if ($asyncBlockId) {
+        
+        $asyncBlockIdentifer = Mage::app()->getRequest()->getParam('async_block_identifer');
+        /*If request already async*/
+        if ($asyncBlockIdentifer) {
             return false;
         }
         $blocks = Mage::app()->getLayout()->getAllBlocks();
-
         foreach ($blocks as $name => $block) {
+            //Mage::log('Blocks::'.$block->getNameInLayout().' key:'.$block->getCacheKey());
             if ($block->getAsync()) {
                 $cacheKey = $block->getCacheKey();
-                Mage::log('!  Async Block generate key:' . $name . ' class: ' . get_class($block) . ' $cacheKey: ' . $cacheKey);
-                $this->_asyncBlockList[$block->getCacheKey()] = $block;
+                Mage::log('--Async::'.$block->getNameInLayout().' key:'.$cacheKey);
+                
+                $cacheData = Mage::app()->loadCache($cacheKey);
+                if (!$cacheData) {
+                    //Mage::log('----Not cached::'.$block->getCacheKey());
+                    $this->_asyncBlockList[$cacheKey] = $block;
+                }                
             }
         }
         if (!empty($this->_asyncBlockList)) {
-
-            $this->getAdapter()->sendBlocksToRemoteRender($this->_asyncBlockList);
-            //$this -> sendBlocksToRemoteRender();
+            Mage::log('sendBlocksToRemoteRender');
+            $this->getAdapter()->sendBlocksToRemoteRender($this->_asyncBlockList); 
+            
         }
     }
-
-    public function asyncInsertBlocks($observer)
+    
+    public function receiveBlocksFromAsyncRendering($blocks)
     {
+        $renderedBlocks = $this->getAdapter()->getRemoteRendedBlocks($this->_asyncBlockList);
+        return $renderedBlocks;
+    }
+    
 
-        $asyncBlockId = Mage::app()->getRequest()->getParam('async_block_id');
-        if ($asyncBlockId) {
+    public function replaceAsyncBlockPlaceholdersToHtml($observer)
+    {
+        $asyncBlockIdentifer = Mage::app()->getRequest()->getParam('async_block_identifer');
+        /*If request already async*/
+        if ($asyncBlockIdentifer) {
             return false;
         }
+        /*If there aren't async blocks*/
         if (empty($this->_asyncBlockList)) {
             return false;
         }
-
-        Varien_Profiler::enable();
-        Varien_Profiler::start('asyncInsertBlocks');
-
-
         $response = Mage::app()->getResponse();
         $body = $response->getBody();
-
-
-
-        //$blocksHtml = $this->getRemoteRendedBlocks();
-        $blocksHtml = $this->getAdapter()->getRemoteRendedBlocks($this->_asyncBlockList);
-
-        foreach ($this->_asyncBlockList as $identifer => $block) {
-            Mage::log('!  Async Block Insert by Key:' . $identifer);
-            $html = '';
-            if (!empty($blocksHtml[$identifer])) {
-                $html = $blocksHtml[$identifer];
+        $renderedBlocks = $this->receiveBlocksFromAsyncRendering($this->_asyncBlockList); 
+        
+//        var_dump($this->_asyncBlockList);
+//        echo '<br/>';
+//        var_dump($renderedBlocks);die;
+        
+        foreach ($this->_asyncBlockList as $identifer => $block) {            
+            if (!empty($renderedBlocks[$identifer])) {                
+                $html = $renderedBlocks[$identifer];
+                Mage::log('GOOOOD');
+            } else {
+                //TODO plaseholder
+                $html = '***************';
             }
             $body = str_replace('{{' . $identifer . '}}', $html, $body);
         }
-
-        Varien_Profiler::stop('asyncInsertBlocks');
-        $time = Varien_Profiler::fetch('asyncInsertBlocks', 'sum');
-        Mage::log('All time of asyncInsertBlocks time::' . $time);
-        Varien_Profiler::disable();
-
         $response->setBody($body);
     }
-
-    public function asyncProfilerStop()
-    {
-        $timerName = 'Loading page';
-        Varien_Profiler::stop($timerName);
-
-        $time = Varien_Profiler::fetch($timerName, 'sum');
-
-        $asyncBlockId = Mage::app()->getRequest()->getParam('async_block_id');
-        if (!$asyncBlockId) {
-            Mage::log($timerName . '::time::' . $time);
-            Mage::log('=========================================End of page async================================================');
-        } else {
-            Mage::log('|    ' . $timerName . '::time::' . $time);
-        }
-
-        Varien_Profiler::disable();
-    }
-
 }
 
