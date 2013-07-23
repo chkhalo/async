@@ -45,7 +45,7 @@ class Los312_Async_Model_Observer
             //Mage::log('Blocks::'.$block->getNameInLayout().' key:'.$block->getCacheKey());
             if ($block->getAsync()) {
                 $cacheKey = $block->getCacheKey();
-                Mage::log('--Async::'.$block->getNameInLayout().' key:'.$cacheKey);
+                //Mage::log('--Async::'.$block->getNameInLayout().' key:'.$cacheKey);
                 
                 $cacheData = Mage::app()->loadCache($cacheKey);
                 if (!$cacheData) {
@@ -55,7 +55,7 @@ class Los312_Async_Model_Observer
             }
         }
         if (!empty($this->_asyncBlockList)) {
-            Mage::log('sendBlocksToRemoteRender');
+            //Mage::log('sendBlocksToRemoteRender');
             $this->getAdapter()->sendBlocksToRemoteRender($this->_asyncBlockList); 
             
         }
@@ -83,20 +83,22 @@ class Los312_Async_Model_Observer
         $body = $response->getBody();
         $renderedBlocks = $this->receiveBlocksFromAsyncRendering($this->_asyncBlockList); 
         
-//        var_dump($this->_asyncBlockList);
-//        echo '<br/>';
-//        var_dump($renderedBlocks);die;
-        
-        foreach ($this->_asyncBlockList as $identifer => $block) {            
+       
+        foreach ($this->_asyncBlockList as $identifer => $block) { 
+          
             if (!empty($renderedBlocks[$identifer])) {                
                 $html = $renderedBlocks[$identifer];
-                Mage::log('GOOOOD');
             } else {
-                //TODO plaseholder
-                $html = '***************';
+                $block = Mage::app()->getLayout()->createBlock(
+                    'los312_async/placeholder',
+                    'placeholder_block',
+                    array('template' => 'los312_async/placeholder.phtml')
+                );
+                $html = $block->toHtml();
             }
             $body = str_replace('{{' . $identifer . '}}', $html, $body);
         }
+        
         $response->setBody($body);
     }
 }
