@@ -95,6 +95,9 @@ class Los312_Async_Model_Observer
                     array('template' => 'los312_async/placeholder.phtml')
                 );
                 $html = $block->toHtml();
+                $url = Los312_Async_Model_Adapter_Curl::$remouteUrls[$identifer];
+                $ajaxUrl = Mage::helper('core/url')->addRequestParam($url, array('async_ajax_upload' => '1'));
+                $html .= '<a href="'.$ajaxUrl.'">AJAX URL</a>';
             }
             $body = str_replace('{{' . $identifer . '}}', $html, $body);
         }

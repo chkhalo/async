@@ -1,6 +1,8 @@
 <?php
 class Los312_Async_Model_Adapter_Curl
 {
+    
+    static $remouteUrls = array();
     /*interfeise*/
     public function sendBlocksToRemoteRender($blocks)
     {
@@ -61,6 +63,8 @@ class Los312_Async_Model_Adapter_Curl
         foreach ($blocks as $identifer => $block) {
             $url = Mage::helper('core/url')->getCurrentUrl();
             $url = Mage::helper('core/url')->addRequestParam($url, array('async_block_identifer' => $block->getCacheKey()));
+            self::$remouteUrls[$identifer] = $url;
+            
            // Mage::log('multipleThreadsRequest::url '.$url);
 
             $curl_array[$identifer] = curl_init($url);
