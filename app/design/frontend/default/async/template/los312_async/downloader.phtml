@@ -1,0 +1,27 @@
+<script>
+
+
+
+Event.observe(window, 'load', function() {
+    
+var url  = '<?php echo $this->getUrl();?>';
+	alert("Loaded!"+url);
+        
+        new Ajax.Request(url, {
+                method:'get',
+                onSuccess: function(transport) {
+                  var response = transport.responseText || "no response text";
+                  $('async_download_<?php echo $this->getBlockIdentifer();?>').update(response);
+                },
+                parameters: {company: 'example', limit: 12},        
+                onFailure: function() { alert('Something went wrong...'); }
+        });
+ 
+
+});
+
+
+
+
+
+</script>
