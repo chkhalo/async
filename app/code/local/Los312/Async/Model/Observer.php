@@ -81,9 +81,10 @@ class Los312_Async_Model_Observer
         }
         $response = Mage::app()->getResponse();
         $body = $response->getBody();
+        /*Wait */
         $renderedBlocks = $this->receiveBlocksFromAsyncRendering($this->_asyncBlockList); 
         
-       
+       $downloadByAjax = false;
         foreach ($this->_asyncBlockList as $identifer => $block) { 
           
             if (!empty($renderedBlocks[$identifer])) {                
@@ -94,10 +95,21 @@ class Los312_Async_Model_Observer
                     'placeholder_block',
                     array('template' => 'los312_async/placeholder.phtml')
                 );
-                $html = $block->toHtml();
+                $downloader = Mage::app()->getLayout()->createBlock(
+                    'los312_async/downloader',
+                    'downloader_block',
+                    array('template' => 'los312_async/downloader.phtml')
+                );  
+                
+                $downloader->setBlockIdentifer($identifer);
+                
+                
+                $html = $block->toHtml().$downloader->toHtml();
                 $url = Los312_Async_Model_Adapter_Curl::$remouteUrls[$identifer];
                 $ajaxUrl = Mage::helper('core/url')->addRequestParam($url, array('async_ajax_upload' => '1'));
                 $html .= '<a href="'.$ajaxUrl.'">AJAX URL</a>';
+                $html = '<div id="async_download_'.$identifer.'" class="async_download" >'.$html.'</div>';
+                $downloadByAjax = true;
             }
             $body = str_replace('{{' . $identifer . '}}', $html, $body);
         }
