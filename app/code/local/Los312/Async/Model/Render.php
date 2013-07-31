@@ -1,6 +1,6 @@
 <?php
 
-class Los312_Async_Model_Render
+class Los312_Async_Model_Render  extends Los312_Async_Model_Abstract
 {
     
     
@@ -15,15 +15,15 @@ class Los312_Async_Model_Render
         if ($asyncBlockIdentifer) {
             foreach ($blocks as $name => $block) {
                 if ($block->getAsync() && $block->getCacheKey() == $asyncBlockIdentifer) {
-                    //Mage::log('Los312_Async_Model_Render::renderBlock '.$asyncBlockIdentifer);
+                    Mage::log('Los312_Async_Model_Render::renderBlock '.$asyncBlockIdentifer);
                     $block->setAsyncRender(true);
                     $block->setAsyncRenderFlag();
                     $html = $block->toHtml();
-                    //Mage::log('Los312_Async_Model_Render::renderBlock '.$html);
+                   // Mage::log('Los312_Async_Model_Render::renderBlock '.$html);
                     $block->setAsyncRender(false);
                     $block->setAsyncRenderFlag(false);
                     $cache = Mage::app()->getCache();
-                    $cache->save($html, Los312_Async_Model_Observer::CACHE_PREFIX.$asyncBlockIdentifer, array("asyncBlock"), Los312_Async_Model_Observer::CACHE_LIMIT);
+                    $cache->save($html, self::CACHE_PREFIX.$asyncBlockIdentifer, array("asyncBlock"), self::CACHE_LIMIT);
                     Mage::app()->getResponse()->setBody($html)->sendResponse();
                     exit;
                 }

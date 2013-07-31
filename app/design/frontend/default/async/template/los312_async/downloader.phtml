@@ -4,16 +4,18 @@
 
 Event.observe(window, 'load', function() {
     
-var url  = '<?php echo $this->getUrl();?>';
-	alert("Loaded!"+url);
+var url  = '<?php echo $this->getAsyncUrl();?>';
+//	alert("Loaded!"+url);
         
         new Ajax.Request(url, {
                 method:'get',
                 onSuccess: function(transport) {
-                  var response = transport.responseText || "no response text";
-                  $('async_download_<?php echo $this->getBlockIdentifer();?>').update(response);
+                  var response = transport.responseText || false;
+                  if(response){
+                     $('async_download_<?php echo $this->getBlockIdentifer();?>').update(response); 
+                  }                  
                 },
-                parameters: {company: 'example', limit: 12},        
+                parameters: {ajax_download_block_identifer: '<?php echo $this->getBlockIdentifer();?>'},        
                 onFailure: function() { alert('Something went wrong...'); }
         });
  

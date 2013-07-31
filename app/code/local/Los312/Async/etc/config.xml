@@ -85,8 +85,11 @@
             </los312_async_design>
             <los312_async_advanced>
                 <adapter>los312_async/adapter_curl</adapter>
-                <waiting_time_limit>30</waiting_time_limit>
                 <storage>los312_async/storage_default</storage>
+                <waiting_time_limit>5</waiting_time_limit>
+                <remout_time_limit>30</remout_time_limit>
+                <remout_ajax_time_limit>300</remout_ajax_time_limit>
+
             </los312_async_advanced>
         </los312_async>
     </default>

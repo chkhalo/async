@@ -10,51 +10,51 @@ class Los312_Async_Model_Adapter_Curl
     }
 
     
-    
-    public function getRemoteRendedBlocks($blocks)
-    {
-        $cache = Mage::app()->getCache();
-        $_asyncBlocksHtml = array();
-        foreach ($blocks as $identifer => $block) {
-            $_asyncBlocksHtml[$identifer] = false;
-        }
-        $time = 0;
-        $timelimitConfig = (int)Mage::getStoreConfig('los312_async/los312_async_advanced/waiting_time_limit');
-        //die('$timelimitConfig:'.$timelimitConfig);
-        $timelimit = 1000000*$timelimitConfig;
-        $timelimit = 100000*20;
-        
-        //$timelimit = 1000000*5;
-        Mage::log('WAIT start=================');
-        $wait = true;
-        do {
-            usleep(100000);
-            $time += 100000 ;
-            Mage::log('time:'.$time);
-            $wait = false;
-            foreach ($blocks as $identifer => $block) {
-                if($_asyncBlocksHtml[$identifer]===false){
-                    $result = $cache->load(Los312_Async_Model_Observer::CACHE_PREFIX.$identifer);
-                    if($result!==false){
-                        $_asyncBlocksHtml[$identifer]=$result;
-                        $cache->remove(Los312_Async_Model_Observer::CACHE_PREFIX.$identifer);
-                    } else {
-                       $wait = true;
-                    }
-                }
-            }
-            if($time>$timelimit){
-                $wait = false;
-                Mage::log('WAIT abort=================');
-            }
-            
-        } while ($wait);
-        
-         Mage::log('WAIT close=================');
-
-        return $_asyncBlocksHtml;
-
-    }
+    //todo remove to storage
+//    public function getRemoteRendedBlocks($blocks)
+//    {
+//        $cache = Mage::app()->getCache();
+//        $_asyncBlocksHtml = array();
+//        foreach ($blocks as $identifer => $block) {
+//            $_asyncBlocksHtml[$identifer] = false;
+//        }
+//        $time = 0;
+//        $timelimitConfig = (int)Mage::getStoreConfig('los312_async/los312_async_advanced/waiting_time_limit');
+//        //die('$timelimitConfig:'.$timelimitConfig);
+//        $timelimit = 1000000*$timelimitConfig;
+//        $timelimit = 100000*20;
+//        
+//        //$timelimit = 1000000*5;
+//        Mage::log('WAIT start=================');
+//        $wait = true;
+//        do {
+//            usleep(100000);
+//            $time += 100000 ;
+//            Mage::log('time:'.$time);
+//            $wait = false;
+//            foreach ($blocks as $identifer => $block) {
+//                if($_asyncBlocksHtml[$identifer]===false){
+//                    $result = $cache->load(self::CACHE_PREFIX.$identifer);
+//                    if($result!==false){
+//                        $_asyncBlocksHtml[$identifer]=$result;
+//                        $cache->remove(self::CACHE_PREFIX.$identifer);
+//                    } else {
+//                       $wait = true;
+//                    }
+//                }
+//            }
+//            if($time>$timelimit){
+//                $wait = false;
+//                Mage::log('WAIT abort=================');
+//            }
+//            
+//        } while ($wait);
+//        
+//         Mage::log('WAIT close=================');
+//
+//        return $_asyncBlocksHtml;
+//
+//    }
 
     public function multipleThreadsRequest($blocks)
     {
@@ -95,7 +95,7 @@ class Los312_Async_Model_Adapter_Curl
         }
         curl_multi_close($mh);
         /*res don't use*/
-        Mage::log('CURL CLOSE=================');
+        Mage::log('CURL CLOSE================='.$time);
         return $res;
     }
 }
