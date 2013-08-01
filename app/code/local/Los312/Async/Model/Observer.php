@@ -25,8 +25,9 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
         /*Check if request already async*/       
         if (Mage::app()->getRequest()->getParam('async_block_identifer', false)) {
             return false;
-        }        
-        
+        }     
+        $message = '|Start sendBlocksToAsyncRendering';
+        Mage::log($message);
         /*Generate list of blocks to async render*/
         $blocks = Mage::app()->getLayout()->getAllBlocks();
         foreach ($blocks as $name => $block) {
@@ -47,6 +48,8 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
             $this->getAdapter()->sendBlocksToRemoteRender($this->_asyncBlockList); 
             
         }
+        $message = '|End sendBlocksToAsyncRendering';
+        Mage::log($message);
     }
     
 //    public function receiveBlocksFromAsyncRendering($blocks)
@@ -69,10 +72,12 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
         $response = Mage::app()->getResponse();
         $body = $response->getBody();
         /*Wait */
-        //$renderedBlocks = $this->receiveBlocksFromAsyncRendering($this->_asyncBlockList); 
+        $message = '|Start getRemoteRendedBlocks';
         $renderedBlocks = $this->getStorage()->getRemoteRendedBlocks($this->_asyncBlockList);
+        $message = '|End getRemoteRendedBlocks';
         
-        Mage::log('Inserts block to body');
+        $message = '|Start insert block to body';
+        Mage::log($message);
         //$downloadByAjax = false;
         foreach ($this->_asyncBlockList as $identifer => $block) { 
             
@@ -96,16 +101,12 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
                 $html .= $block->toHtml().$downloader->toHtml();
                 $html .='</div>';  
                 
-//                $url = Los312_Async_Model_Adapter_Curl::$remouteUrls[$identifer];
-//                $ajaxUrl = Mage::helper('core/url')->addRequestParam($url, array('async_ajax_upload' => '1'));
-//                $html .= '<a href="'.$ajaxUrl.'">AJAX URL</a>';
-//                $html = '<div id="async_download_'.$identifer.'" class="async_download" >'.$html.'</div>';
-                //$downloadByAjax = true;
             }
             
             $body = str_replace('{{' . $identifer . '}}', $html, $body);
         }
-        
+        $message = '|End insert block to body';
+        Mage::log($message);
         $response->setBody($body);
     }
 }

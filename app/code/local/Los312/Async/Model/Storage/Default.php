@@ -43,13 +43,14 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
         $timelimit = 1000000 * $timelimitConfig;
         //$timelimit = 100000*20;
         //$timelimit = 1000000*5;
-        Mage::log('WAIT start===getRemoteRendedBlocks=============='.$timelimit);
+        
+        $message = '|    Start WAIT  getRemoteRendedBlocks timelimit '.$timelimitConfig;
+        Mage::log($message);
+
         $wait = true;
         do {
             usleep(self::SLEEP_INTERVAL);
             $time += self::SLEEP_INTERVAL;
-
-            Mage::log('time:' . $time);
 
             $wait = false;
             foreach ($blocks as $identifer => $block) {
@@ -69,7 +70,10 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
 //            }
         } while (($time < $timelimit)&&$wait);
 
-        Mage::log('WAIT close====getRemoteRendedBlocks============='.$time);
+        $timeTmp = $time/1000000;
+        
+        $message = '|    End WAIT getRemoteRendedBlocks$timeTmp '.$timeTmp;
+        Mage::log($message);
 
         return $_asyncBlocksHtml;
     }

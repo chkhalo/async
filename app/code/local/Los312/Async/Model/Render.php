@@ -6,8 +6,6 @@ class Los312_Async_Model_Render  extends Los312_Async_Model_Abstract
     
     public function renderBlock($asyncBlockIdentifer)
     {
-       // Mage::log('Los312_Async_Model_Render::renderBlock');
-
         ignore_user_abort();
         $remoutTimeLimit = (int)Mage::getStoreConfig('los312_async/los312_async_advanced/remout_time_limit');
         set_time_limit($remoutTimeLimit);
@@ -15,7 +13,10 @@ class Los312_Async_Model_Render  extends Los312_Async_Model_Abstract
         if ($asyncBlockIdentifer) {
             foreach ($blocks as $name => $block) {
                 if ($block->getAsync() && $block->getCacheKey() == $asyncBlockIdentifer) {
-                    Mage::log('Los312_Async_Model_Render::renderBlock '.$asyncBlockIdentifer);
+
+                    $message = '--------Start render remout block '.$asyncBlockIdentifer;
+                    Mage::log($message);                    
+                    
                     $block->setAsyncRender(true);
                     $block->setAsyncRenderFlag();
                     $html = $block->toHtml();
@@ -25,6 +26,9 @@ class Los312_Async_Model_Render  extends Los312_Async_Model_Abstract
                     $cache = Mage::app()->getCache();
                     $cache->save($html, self::CACHE_PREFIX.$asyncBlockIdentifer, array("asyncBlock"), self::CACHE_LIMIT);
                     Mage::app()->getResponse()->setBody($html)->sendResponse();
+                    
+                    $message = '--------End render remout block '.$asyncBlockIdentifer;
+                    Mage::log($message);                    
                     exit;
                 }
             }

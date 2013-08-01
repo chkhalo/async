@@ -9,55 +9,12 @@ class Los312_Async_Model_Adapter_Curl
         $this->multipleThreadsRequest($blocks);
     }
 
-    
-    //todo remove to storage
-//    public function getRemoteRendedBlocks($blocks)
-//    {
-//        $cache = Mage::app()->getCache();
-//        $_asyncBlocksHtml = array();
-//        foreach ($blocks as $identifer => $block) {
-//            $_asyncBlocksHtml[$identifer] = false;
-//        }
-//        $time = 0;
-//        $timelimitConfig = (int)Mage::getStoreConfig('los312_async/los312_async_advanced/waiting_time_limit');
-//        //die('$timelimitConfig:'.$timelimitConfig);
-//        $timelimit = 1000000*$timelimitConfig;
-//        $timelimit = 100000*20;
-//        
-//        //$timelimit = 1000000*5;
-//        Mage::log('WAIT start=================');
-//        $wait = true;
-//        do {
-//            usleep(100000);
-//            $time += 100000 ;
-//            Mage::log('time:'.$time);
-//            $wait = false;
-//            foreach ($blocks as $identifer => $block) {
-//                if($_asyncBlocksHtml[$identifer]===false){
-//                    $result = $cache->load(self::CACHE_PREFIX.$identifer);
-//                    if($result!==false){
-//                        $_asyncBlocksHtml[$identifer]=$result;
-//                        $cache->remove(self::CACHE_PREFIX.$identifer);
-//                    } else {
-//                       $wait = true;
-//                    }
-//                }
-//            }
-//            if($time>$timelimit){
-//                $wait = false;
-//                Mage::log('WAIT abort=================');
-//            }
-//            
-//        } while ($wait);
-//        
-//         Mage::log('WAIT close=================');
-//
-//        return $_asyncBlocksHtml;
-//
-//    }
-
     public function multipleThreadsRequest($blocks)
     {
+        
+        $message = '|    Start Multycurl';
+        Mage::log($message);
+        
         $mh = curl_multi_init();
         $curl_array = array();
         foreach ($blocks as $identifer => $block) {
@@ -74,14 +31,9 @@ class Los312_Async_Model_Adapter_Curl
             curl_multi_add_handle($mh, $curl_array[$identifer]);
         }
         $running = NULL;
-        //curl_multi_exec($mh, $running);
-        //return;
         $time = 0;
-        Mage::log('CURL start=================');
-        //curl_multi_exec($mh, $running);
         do {
             $time += 100000 ;
-            Mage::log('time:'.$time);
             usleep(100000);
             curl_multi_exec($mh, $running);
         } while ($running > 0);
@@ -95,7 +47,10 @@ class Los312_Async_Model_Adapter_Curl
         }
         curl_multi_close($mh);
         /*res don't use*/
-        Mage::log('CURL CLOSE================='.$time);
+        
+        $timeTmp = $time/1000000;        
+        $message = '|    End Multycurl $timeTmp'.$timeTmp;
+        Mage::log($message);
         return $res;
     }
 }
