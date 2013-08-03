@@ -22,12 +22,15 @@ class Los312_Async_Model_Adapter_Curl
             $url = Mage::helper('core/url')->addRequestParam($url, array('async_block_identifer' => $block->getCacheKey()));
             self::$remouteUrls[$identifer] = $url;
             
-           // Mage::log('multipleThreadsRequest::url '.$url);
-
+           Mage::log('multipleThreadsRequest::url '.$url);
+            
             $curl_array[$identifer] = curl_init($url);
+            
             curl_setopt($curl_array[$identifer], CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl_array[$identifer], CURLOPT_COOKIE, 'frontend='.Mage::app()->getCookie()->get('frontend'));
+            
             //curl_setopt($curl_array[$identifer], CURLOPT_TIMEOUT, 1);
-            curl_setopt($curl_array[$identifer], CURLOPT_TIMEOUT_MS, 300);
+            curl_setopt($curl_array[$identifer], CURLOPT_TIMEOUT_MS, 400);
             curl_multi_add_handle($mh, $curl_array[$identifer]);
         }
         $running = NULL;
@@ -37,11 +40,18 @@ class Los312_Async_Model_Adapter_Curl
             usleep(100000);
             curl_multi_exec($mh, $running);
         } while ($running > 0);
-//
+        
+//        curl_multi_exec($mh, $running);
+//        curl_multi_exec($mh, $running);
+//        curl_multi_exec($mh, $running);
+        /*to do remove*/
         $res = array();
-        foreach ($blocks as $identifer => $block) {
-            $res[$identifer] = curl_multi_getcontent($curl_array[$identifer]);
-        }
+//        foreach ($blocks as $identifer => $block) {
+//            Mage::log('curl_multi_getcontent::identifer '.$identifer);
+//            $res[$identifer] = curl_multi_getcontent($curl_array[$identifer]);
+//        }
+//        /*to do remove*/
+        
         foreach ($blocks as $identifer => $block) {
             curl_multi_remove_handle($mh, $curl_array[$identifer]);
         }
@@ -50,7 +60,9 @@ class Los312_Async_Model_Adapter_Curl
         
         $timeTmp = $time/1000000;        
         $message = '|    End Multycurl $timeTmp'.$timeTmp;
+        //die;
         Mage::log($message);
         return $res;
+        
     }
 }

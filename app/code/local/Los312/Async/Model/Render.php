@@ -4,17 +4,17 @@ class Los312_Async_Model_Render  extends Los312_Async_Model_Abstract
 {
     
     
-    public function renderBlock($asyncBlockIdentifer)
+    public function renderBlock($identifer)
     {
         ignore_user_abort();
         $remoutTimeLimit = (int)Mage::getStoreConfig('los312_async/los312_async_advanced/remout_time_limit');
         set_time_limit($remoutTimeLimit);
         $blocks = Mage::app()->getLayout()->getAllBlocks();
-        if ($asyncBlockIdentifer) {
+        if ($identifer) {
             foreach ($blocks as $name => $block) {
-                if ($block->getAsync() && $block->getCacheKey() == $asyncBlockIdentifer) {
+                if ($block->getAsync() && $block->getCacheKey() == $identifer) {
 
-                    $message = '--------Start render remout block '.$asyncBlockIdentifer;
+                    $message = '--------Start render remout block '.$identifer;
                     Mage::log($message);                    
                     
                     $block->setAsyncRender(true);
@@ -23,11 +23,21 @@ class Los312_Async_Model_Render  extends Los312_Async_Model_Abstract
                    // Mage::log('Los312_Async_Model_Render::renderBlock '.$html);
                     $block->setAsyncRender(false);
                     $block->setAsyncRenderFlag(false);
-                    $cache = Mage::app()->getCache();
-                    $cache->save($html, self::CACHE_PREFIX.$asyncBlockIdentifer, array("asyncBlock"), self::CACHE_LIMIT);
+                    
+                    //$storage = $this->getStorage();
+                    
+                    //$cache = Mage::app()->getCache();
+                    
+                    
+                   // $html = '999999999999';
+                    
+                    $this->getStorage()->saveBlockHtml($identifer, $html);
+                    
+                    //$cache->save($html, self::CACHE_PREFIX.$identifer, array("asyncBlock"), self::CACHE_LIMIT);
+                    /*todo delete*/
                     Mage::app()->getResponse()->setBody($html)->sendResponse();
                     
-                    $message = '--------End render remout block '.$asyncBlockIdentifer;
+                    $message = '--------End render remout block '.$identifer;
                     Mage::log($message);                    
                     exit;
                 }

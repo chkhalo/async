@@ -14,6 +14,8 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
         $asyncBlockIdentifer = Mage::app()->getRequest()->getParam('async_block_identifer', false);
         /*If request async*/
         if ($asyncBlockIdentifer) {
+                    $message = '|REMOUTE| Start in observer';
+        Mage::log($message);
             Mage::getModel('los312_async/render')->renderBlock($asyncBlockIdentifer);            
         }        
 
@@ -79,6 +81,10 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
         $message = '|Start insert block to body';
         Mage::log($message);
         //$downloadByAjax = false;
+//
+//        print_r($renderedBlocks);
+//        die;
+//        
         foreach ($this->_asyncBlockList as $identifer => $block) { 
             
             if (!empty($renderedBlocks[$identifer])) {                
