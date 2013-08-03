@@ -16,7 +16,7 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
     public function saveBlockHtml($identifer, $html)
     {
         
-        $message = '|    saveBlockHtml '.$this->getCacheKey($identifer). '   '.$html;
+        $message = '|REMOUTE|        saveBlockHtml '.$this->getCacheKey($identifer);
         Mage::log($message);
         
         $cache = Mage::app()->getCache();
@@ -35,7 +35,7 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
      */
     public function getBlockHtml($identifer)
     {
-        $message = '|    getBlockHtml '.$this->getCacheKey($identifer);
+        $message = '|<<<getBlockHtml '.$this->getCacheKey($identifer);
         Mage::log($message);
         $cache = Mage::app()->getCache();
         //$result = $cache->load(self::CACHE_PREFIX . $identifer);
@@ -58,15 +58,14 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
 
         //set_time_limit($timelimit);
         
-        $message = '|==========waitBlockHtml '.$this->getCacheKey($identifer);
+        $message = '|AJAX| WaitBlockHtml '.$this->getCacheKey($identifer);
         Mage::log($message);
 
         do {
             usleep(self::SLEEP_INTERVAL);
             $time += self::SLEEP_INTERVAL;
-                            $message = '|=============wait '.$time;
+                            $message = '|AJAX| ======== wait '.$time .' '.$this->getCacheKey($identifer);
                             Mage::log($message);            
-            /*getBlockHtml($identifer)*/
             $result = $cache->load($this->getCacheKey($identifer));
             if ($result !== false) {
                 $this->removeBlockHtml($identifer);
@@ -92,7 +91,7 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
         //$timelimit = 1000000*30;
         //$timelimit = 1000000*5;
         
-        $message = '|Start WAIT  getRemoteRendedBlocks timelimit '.$timelimitConfig;
+        $message = '|WAIT| Start getRemoteRendedBlocks timelimit '.$timelimitConfig;
         Mage::log($message);
 
         $wait = true;
@@ -104,7 +103,7 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
             foreach ($blocks as $identifer => $block) {
                 if ($_asyncBlocksHtml[$identifer] === false) {
                     //$result = $cache->load(self::CACHE_PREFIX . $identifer);
-                            $message = '|    getRemoteRendedBlocks '.$this->getCacheKey($identifer). '   ';
+                            $message = '|    wait remote rended blocks'.$this->getCacheKey($identifer). '   ';
                             Mage::log($message);
                     $result = $cache->load($this->getCacheKey($identifer));
                     if ($result !== false) {
@@ -121,7 +120,7 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
 
         $timeTmp = $time/1000000;
         
-        $message = '|End WAIT getRemoteRendedBlocks$timeTmp '.$timeTmp;
+        $message = '|WAIT| End getRemoteRendedBlocks $time '.$timeTmp;
         Mage::log($message);
 
         return $_asyncBlocksHtml;

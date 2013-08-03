@@ -127,6 +127,10 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
         }
         $message = '|End insert block to body';
         Mage::log($message);
+        $message = '|           PAGE LOADED          ';
+        Mage::log($message);
+        $message = '|                                |';
+        Mage::log($message);
         $response->setBody($body);
     }
 }

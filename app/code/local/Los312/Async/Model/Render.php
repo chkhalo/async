@@ -14,8 +14,10 @@ class Los312_Async_Model_Render  extends Los312_Async_Model_Abstract
             foreach ($blocks as $name => $block) {
                 if ($block->getAsync() && $block->getCacheKey() == $identifer) {
 
-                    $message = '--------Start render remout block '.$identifer;
-                    Mage::log($message);                    
+                    $message = '|REMOUTE|--------Start render remout block '.$identifer;                    
+                    Mage::log($message);       
+                    
+                    $this->getStorage()->removeBlockHtml($identifer);
                     
                     $block->setAsyncRender(true);
                     $block->setAsyncRenderFlag();
@@ -37,7 +39,7 @@ class Los312_Async_Model_Render  extends Los312_Async_Model_Abstract
                     /*todo delete*/
                     Mage::app()->getResponse()->setBody($html)->sendResponse();
                     
-                    $message = '--------End render remout block '.$identifer;
+                    $message = '|REMOUTE|--------End render remout block '.$identifer;
                     Mage::log($message);                    
                     exit;
                 }
