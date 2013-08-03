@@ -75,10 +75,10 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
         $body = $response->getBody();
         /*Wait */
         $message = '|Start getRemoteRendedBlocks';
-        //$renderedBlocks = $this->getStorage()->getRemoteRendedBlocks($this->_asyncBlockList);
+        $renderedBlocks = $this->getStorage()->getRemoteRendedBlocks($this->_asyncBlockList);
         
         
-        $renderedBlocks =  $this->_asyncBlocksHtml;
+        //$renderedBlocks =  $this->_asyncBlocksHtml;
         $message = '|End getRemoteRendedBlocks';
         
         $message = '|Start insert block to body';
@@ -107,7 +107,8 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
                 
                 $downloader->setBlockIdentifer($identifer);               
                 
-                $html .= $block->toHtml().$downloader->toHtml();
+                $html .= $block->toHtml();
+                //$html .= $downloader->toHtml();
                 $html .='</div>';  
                 
             }

@@ -73,14 +73,20 @@ class Los312_Async_Model_Adapter_Curl
         $curl_array = array();
         foreach ($blocks as $identifer => $block) {
             $url = Mage::helper('core/url')->getCurrentUrl();
-            $url = Mage::helper('core/url')->addRequestParam($url, array('async_block_identifer' => $block->getCacheKey()));
+            $url = Mage::helper('core/url')->addRequestParam($url, 
+                    array('async_block_identifer' => $block->getCacheKey(),
+                    'frontend_cookie'=>Mage::app()->getCookie()->get('frontend')
+                    ));
             self::$remouteUrls[$identifer] = $url;
             
            // Mage::log('multipleThreadsRequest::url '.$url);
 
             $curl_array[$identifer] = curl_init($url);
+            //curl_setopt($curl_array[$identifer], CURLOPT_COOKIE, 'frontend='.Mage::app()->getCookie()->get('frontend'));
+            
+            //curl_setopt($curl_array[$identifer], CURLOPT_COOKIE, 'frontend=test');
             curl_setopt($curl_array[$identifer], CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl_array[$identifer], CURLOPT_TIMEOUT, 100);
+            curl_setopt($curl_array[$identifer], CURLOPT_TIMEOUT, 1);
             //curl_setopt($curl_array[$identifer], CURLOPT_TIMEOUT_MS, 300);
             curl_multi_add_handle($mh, $curl_array[$identifer]);
         }

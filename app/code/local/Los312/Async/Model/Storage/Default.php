@@ -4,7 +4,11 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
 {
     public function getCacheKey($identifer)
     {
-        $cookie = Mage::app()->getCookie()->get('frontend');
+        $cookie = Mage::app()->getCookie()->get('frontend');      
+        
+        if(!$cookie){
+            $cookie = Mage::app()->getRequest()->getParam('frontend_cookie', false);
+        }
         $key = self::CACHE_PREFIX . $cookie . '_' . $identifer;
         return $key ;
     }   
@@ -80,10 +84,10 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
         $timelimitConfig = (int) Mage::getStoreConfig('los312_async/los312_async_advanced/waiting_time_limit');
         //die('$timelimitConfig:'.$timelimitConfig);
         $timelimit = 1000000 * $timelimitConfig;
-        //$timelimit = 100000*20;
+        //$timelimit = 1000000*30;
         //$timelimit = 1000000*5;
         
-        $message = '|    Start WAIT  getRemoteRendedBlocks timelimit '.$timelimitConfig;
+        $message = '|Start WAIT  getRemoteRendedBlocks timelimit '.$timelimitConfig;
         Mage::log($message);
 
         $wait = true;
@@ -112,7 +116,7 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
 
         $timeTmp = $time/1000000;
         
-        $message = '|    End WAIT getRemoteRendedBlocks$timeTmp '.$timeTmp;
+        $message = '|End WAIT getRemoteRendedBlocks$timeTmp '.$timeTmp;
         Mage::log($message);
 
         return $_asyncBlocksHtml;
