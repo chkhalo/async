@@ -23,6 +23,7 @@ class Los312_Async_Model_Adapter_Curl
                     ));
             self::$remouteUrls[$identifer] = $url;
             
+            Mage::getModel('los312_async/storage')->getStorage()->removeBlockHtml($identifer);            
            // Mage::log('multipleThreadsRequest::url '.$url);
 
             $curl_array[$identifer] = curl_init($url);
