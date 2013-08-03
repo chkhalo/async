@@ -4,7 +4,7 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
 {
     
 
-    //protected $_asyncBlocksHtml = array();
+    protected $_asyncBlocksHtml = array();
     protected $_asyncBlockList = array();  
     
 
@@ -47,7 +47,7 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
         /*Send list of blocks to async render*/
         if (!empty($this->_asyncBlockList)) {
             //Mage::log('sendBlocksToRemoteRender');
-            $this->getAdapter()->sendBlocksToRemoteRender($this->_asyncBlockList); 
+           $this->_asyncBlocksHtml = $this->getAdapter()->sendBlocksToRemoteRender($this->_asyncBlockList); 
             
         }
         $message = '|End sendBlocksToAsyncRendering';
@@ -75,7 +75,10 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
         $body = $response->getBody();
         /*Wait */
         $message = '|Start getRemoteRendedBlocks';
-        $renderedBlocks = $this->getStorage()->getRemoteRendedBlocks($this->_asyncBlockList);
+        //$renderedBlocks = $this->getStorage()->getRemoteRendedBlocks($this->_asyncBlockList);
+        
+        
+        $renderedBlocks =  $this->_asyncBlocksHtml;
         $message = '|End getRemoteRendedBlocks';
         
         $message = '|Start insert block to body';

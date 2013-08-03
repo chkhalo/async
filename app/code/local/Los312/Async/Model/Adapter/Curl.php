@@ -6,9 +6,10 @@ class Los312_Async_Model_Adapter_Curl
     /*interfeise*/
     public function sendBlocksToRemoteRender($blocks)
     {
-        $this->multipleThreadsRequest($blocks);
+        $result = $this->multipleThreadsRequest($blocks);
+        return $result;
     }
-
+/*
     public function multipleThreadsRequest2($blocks)
     {
         
@@ -44,19 +45,19 @@ class Los312_Async_Model_Adapter_Curl
 //        curl_multi_exec($mh, $running);
 //        curl_multi_exec($mh, $running);
 //        curl_multi_exec($mh, $running);
-        /*to do remove*/
+        
         $res = array();
 //        foreach ($blocks as $identifer => $block) {
 //            Mage::log('curl_multi_getcontent::identifer '.$identifer);
 //            $res[$identifer] = curl_multi_getcontent($curl_array[$identifer]);
 //        }
-//        /*to do remove*/
+//       
         
         foreach ($blocks as $identifer => $block) {
             curl_multi_remove_handle($mh, $curl_array[$identifer]);
         }
         curl_multi_close($mh);
-        /*res don't use*/
+
         
         $timeTmp = $time/1000000;        
         $message = '|    End Multycurl $timeTmp'.$timeTmp;
@@ -64,7 +65,7 @@ class Los312_Async_Model_Adapter_Curl
         Mage::log($message);
         return $res;
         
-    }
+    }*/
    /*working*/ 
  public function multipleThreadsRequest($blocks)
     {
@@ -91,7 +92,7 @@ class Los312_Async_Model_Adapter_Curl
         //curl_multi_exec($mh, $running);
         do {
             $time += 100000 ;
-            Mage::log('time:'.$time);
+           // Mage::log('time:'.$time);
             usleep(100000);
             curl_multi_exec($mh, $running);
         } while ($running > 0);
