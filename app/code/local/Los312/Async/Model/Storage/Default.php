@@ -45,7 +45,7 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
                 return $result;
         }
         //return $result;
-        return 'empty 5';
+        return '';
     }
     
     public function waitBlockHtml($identifer)
@@ -56,11 +56,16 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
         $timelimitConfig = (int) Mage::getStoreConfig('los312_async/los312_async_advanced/remout_ajax_time_limit');
         $timelimit = 1000000 * $timelimitConfig;
 
-        set_time_limit($timelimit);
+        //set_time_limit($timelimit);
+        
+        $message = '|==========waitBlockHtml '.$this->getCacheKey($identifer);
+        Mage::log($message);
 
         do {
             usleep(self::SLEEP_INTERVAL);
             $time += self::SLEEP_INTERVAL;
+                            $message = '|=============wait '.$time;
+                            Mage::log($message);            
             /*getBlockHtml($identifer)*/
             $result = $cache->load($this->getCacheKey($identifer));
             if ($result !== false) {
@@ -69,7 +74,7 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
                 return $result;
             }
         } while ($time < $timelimit);
-        return 'empty';            
+        return 'Overtime';            
     }
 
     public function getRemoteRendedBlocks($blocks)

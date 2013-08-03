@@ -2,7 +2,7 @@
 
 abstract class Los312_Async_Model_Abstract
 {
-    const CACHE_LIMIT = 30;
+    const CACHE_LIMIT = 300;
     const CACHE_PREFIX = 'los312_async_';
     const SLEEP_INTERVAL = 100000;
     const AJAX_DOWNLOAD_BLOCK_IDENTIFER = 'ajax_download_block_identifer';

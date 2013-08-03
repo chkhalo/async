@@ -5,7 +5,8 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
     
 
     protected $_asyncBlocksHtml = array();
-    protected $_asyncBlockList = array();  
+    protected $_asyncBlockList = array();
+    protected $_waitAsyncBlockList = array();
     
 
     /* Render one block if the remoute request */
@@ -75,7 +76,16 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
         $body = $response->getBody();
         /*Wait */
         $message = '|Start getRemoteRendedBlocks';
-        $renderedBlocks = $this->getStorage()->getRemoteRendedBlocks($this->_asyncBlockList);
+        
+        /*Check if it's not load from curl*/
+        foreach ($this->_asyncBlockList as $identifer => $block) { 
+            if(empty($this->_asyncBlocksHtml[$identifer])){
+               $this->_waitAsyncBlockList[$identifer] = $block; 
+            }            
+        }
+        
+        
+        $renderedBlocks = $this->getStorage()->getRemoteRendedBlocks($this->_waitAsyncBlockList);
         
         
         //$renderedBlocks =  $this->_asyncBlocksHtml;
@@ -108,7 +118,7 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
                 $downloader->setBlockIdentifer($identifer);               
                 
                 $html .= $block->toHtml();
-                //$html .= $downloader->toHtml();
+                $html .= $downloader->toHtml();
                 $html .='</div>';  
                 
             }
