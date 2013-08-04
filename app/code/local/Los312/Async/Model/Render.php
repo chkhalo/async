@@ -3,7 +3,7 @@
 class Los312_Async_Model_Render  extends Los312_Async_Model_Abstract
 {
     
-    
+    /*Usage on the remoute server*/
     public function renderBlock($identifer)
     {
         ignore_user_abort();

@@ -54,13 +54,12 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
         /*wait*/
         $time = 0;
         $timelimitConfig = (int) Mage::getStoreConfig('los312_async/los312_async_advanced/remout_ajax_time_limit');
-        $timelimit = 1000000 * $timelimitConfig;
-
-        //set_time_limit($timelimit);
-        
+        if($timelimitConfig>0){
+            $timelimit = $timelimitConfig*self::COEFFICIENT_MICRO_SECONDS;
+        }     
+    
         $message = '|AJAX| WaitBlockHtml '.$this->getCacheKey($identifer);
         Mage::log($message);
-
         do {
             usleep(self::SLEEP_INTERVAL);
             $time += self::SLEEP_INTERVAL;
@@ -72,8 +71,14 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
                 //$cache->remove(self::CACHE_PREFIX . $identifer);
                 return $result;
             }
+            if($timelimitConfig>0){
+                $time += self::SLEEP_INTERVAL;
+                if($time > $timelimit){
+                   return '';
+                }               
+            }            
         } while ($time < $timelimit);
-        return 'Overtime';            
+        return '';            
     }
 
     public function getRemoteRendedBlocks($blocks)
@@ -86,10 +91,7 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
         $time = 0;
         /* sec */
         $timelimitConfig = (int) Mage::getStoreConfig('los312_async/los312_async_advanced/waiting_time_limit');
-        //die('$timelimitConfig:'.$timelimitConfig);
         $timelimit = $timelimitConfig * self::COEFFICIENT_MICRO_SECONDS;
-        //$timelimit = 1000000*30;
-        //$timelimit = 1000000*5;
         
         $message = '|WAIT| Start getRemoteRendedBlocks timelimit '.$timelimitConfig;
         Mage::log($message);
