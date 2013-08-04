@@ -24,11 +24,19 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
 
     /*Send list of blocks to async render*/
     public function sendBlocksToAsyncRendering($observer)
-    {        
+    {    
+        /*Check if async enabled*/     
+        if (!Mage::app()->getHelper('los312_async')->isActive()){
+            $message = 'ACYNC IS DISABLED';
+            Mage::log($message);            
+            return false;
+        }
+        
         /*Check if request already async*/       
         if (Mage::app()->getRequest()->getParam('async_block_identifer', false)) {
             return false;
-        }     
+        }        
+
         $message = '|Start sendBlocksToAsyncRendering';
         Mage::log($message);
         /*Generate list of blocks to async render*/
@@ -55,15 +63,15 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
         Mage::log($message);
     }
     
-//    public function receiveBlocksFromAsyncRendering($blocks)
-//    {
-//        $renderedBlocks = $this->getAdapter()->getRemoteRendedBlocks($this->_asyncBlockList);
-//        return $renderedBlocks;
-//    }
     
 
     public function replaceAsyncBlockPlaceholdersToHtml($observer)
     {
+        if (!Mage::app()->getHelper('los312_async')->isActive()){
+            $message = 'ACYNC IS DISABLED 2';
+            Mage::log($message);            
+            return false;
+        }        
         /*If request already async*/
         if (Mage::app()->getRequest()->getParam('async_block_identifer', false)) {
             return false;
