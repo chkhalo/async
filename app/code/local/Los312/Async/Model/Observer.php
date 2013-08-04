@@ -117,16 +117,18 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
                     'placeholder_block',
                     array('template' => 'los312_async/placeholder.phtml')
                 );
-                $downloader = Mage::app()->getLayout()->createBlock(
-                    'los312_async/downloader',
-                    'downloader_block',
-                    array('template' => 'los312_async/downloader.phtml')
-                );  
-                
-                $downloader->setBlockIdentifer($identifer);               
-                
                 $html .= $block->toHtml();
-                $html .= $downloader->toHtml();
+                if(Mage::app()->getHelper('los312_async')->isAllowAjaxDownload()){
+                    $downloader = Mage::app()->getLayout()->createBlock(
+                        'los312_async/downloader',
+                        'downloader_block',
+                        array('template' => 'los312_async/downloader.phtml')
+                    );  
+
+                    $downloader->setBlockIdentifer($identifer);
+                    $html .= $downloader->toHtml();                   
+                }               
+                
                 $html .='</div>';  
                 
             }
