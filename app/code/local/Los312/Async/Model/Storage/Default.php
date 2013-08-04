@@ -87,7 +87,7 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
         /* sec */
         $timelimitConfig = (int) Mage::getStoreConfig('los312_async/los312_async_advanced/waiting_time_limit');
         //die('$timelimitConfig:'.$timelimitConfig);
-        $timelimit = 1000000 * $timelimitConfig;
+        $timelimit = $timelimitConfig * self::COEFFICIENT_MICRO_SECONDS;
         //$timelimit = 1000000*30;
         //$timelimit = 1000000*5;
         
@@ -96,9 +96,7 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
 
         $wait = true;
         do {
-            usleep(self::SLEEP_INTERVAL);
-            $time += self::SLEEP_INTERVAL;
-
+            usleep(self::SLEEP_INTERVAL);            
             $wait = false;
             foreach ($blocks as $identifer => $block) {
                 if ($_asyncBlocksHtml[$identifer] === false) {
@@ -115,8 +113,13 @@ class Los312_Async_Model_Storage_Default extends Los312_Async_Model_Abstract
                     }
                 }
             }
-
-        } while (($time < $timelimit)&&$wait);
+            if($timelimitConfig>0){
+                $time += self::SLEEP_INTERVAL;
+                if($time > $timelimit){
+                   break;
+                }               
+            }
+        } while ($wait);
 
         $timeTmp = $time/1000000;
         

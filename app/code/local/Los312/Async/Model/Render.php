@@ -8,7 +8,10 @@ class Los312_Async_Model_Render  extends Los312_Async_Model_Abstract
     {
         ignore_user_abort();
         $remoutTimeLimit = (int)Mage::getStoreConfig('los312_async/los312_async_advanced/remout_time_limit');
-        set_time_limit($remoutTimeLimit);
+        if($remoutTimeLimit>0){
+            set_time_limit($remoutTimeLimit);
+        }
+        
         $blocks = Mage::app()->getLayout()->getAllBlocks();
         if ($identifer) {
             foreach ($blocks as $name => $block) {
