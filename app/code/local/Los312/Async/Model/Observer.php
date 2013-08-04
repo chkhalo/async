@@ -4,8 +4,9 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
 {
     
 
-    //protected $_asyncBlocksHtml = array();
-    protected $_asyncBlockList = array();  
+    protected $_asyncBlocksHtml = array();
+    protected $_asyncBlockList = array();
+    protected $_waitAsyncBlockList = array();
     
 
     /* Render one block if the remoute request */
@@ -23,11 +24,19 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
 
     /*Send list of blocks to async render*/
     public function sendBlocksToAsyncRendering($observer)
-    {        
+    {    
+        /*Check if async enabled*/     
+        if (!Mage::app()->getHelper('los312_async')->isActive()){
+            $message = 'ACYNC IS DISABLED';
+            Mage::log($message);            
+            return false;
+        }
+        
         /*Check if request already async*/       
         if (Mage::app()->getRequest()->getParam('async_block_identifer', false)) {
             return false;
-        }     
+        }        
+
         $message = '|Start sendBlocksToAsyncRendering';
         Mage::log($message);
         /*Generate list of blocks to async render*/
@@ -47,22 +56,22 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
         /*Send list of blocks to async render*/
         if (!empty($this->_asyncBlockList)) {
             //Mage::log('sendBlocksToRemoteRender');
-            $this->getAdapter()->sendBlocksToRemoteRender($this->_asyncBlockList); 
+           $this->_asyncBlocksHtml = $this->getAdapter()->sendBlocksToRemoteRender($this->_asyncBlockList); 
             
         }
         $message = '|End sendBlocksToAsyncRendering';
         Mage::log($message);
     }
     
-//    public function receiveBlocksFromAsyncRendering($blocks)
-//    {
-//        $renderedBlocks = $this->getAdapter()->getRemoteRendedBlocks($this->_asyncBlockList);
-//        return $renderedBlocks;
-//    }
     
 
     public function replaceAsyncBlockPlaceholdersToHtml($observer)
     {
+        if (!Mage::app()->getHelper('los312_async')->isActive()){
+            $message = 'ACYNC IS DISABLED 2';
+            Mage::log($message);            
+            return false;
+        }        
         /*If request already async*/
         if (Mage::app()->getRequest()->getParam('async_block_identifer', false)) {
             return false;
@@ -75,7 +84,19 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
         $body = $response->getBody();
         /*Wait */
         $message = '|Start getRemoteRendedBlocks';
-        $renderedBlocks = $this->getStorage()->getRemoteRendedBlocks($this->_asyncBlockList);
+        
+        /*Check if it's not load from curl*/
+        foreach ($this->_asyncBlockList as $identifer => $block) { 
+            if(empty($this->_asyncBlocksHtml[$identifer])){
+               $this->_waitAsyncBlockList[$identifer] = $block; 
+            }            
+        }
+        
+        
+        $renderedBlocks = $this->getStorage()->getRemoteRendedBlocks($this->_waitAsyncBlockList);
+        
+        
+        //$renderedBlocks =  $this->_asyncBlocksHtml;
         $message = '|End getRemoteRendedBlocks';
         
         $message = '|Start insert block to body';
@@ -96,15 +117,18 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
                     'placeholder_block',
                     array('template' => 'los312_async/placeholder.phtml')
                 );
-                $downloader = Mage::app()->getLayout()->createBlock(
-                    'los312_async/downloader',
-                    'downloader_block',
-                    array('template' => 'los312_async/downloader.phtml')
-                );  
+                $html .= $block->toHtml();
+                if(Mage::app()->getHelper('los312_async')->isAllowAjaxDownload()){
+                    $downloader = Mage::app()->getLayout()->createBlock(
+                        'los312_async/downloader',
+                        'downloader_block',
+                        array('template' => 'los312_async/downloader.phtml')
+                    );  
+
+                    $downloader->setBlockIdentifer($identifer);
+                    $html .= $downloader->toHtml();                   
+                }               
                 
-                $downloader->setBlockIdentifer($identifer);               
-                
-                $html .= $block->toHtml().$downloader->toHtml();
                 $html .='</div>';  
                 
             }
@@ -112,6 +136,10 @@ class Los312_Async_Model_Observer  extends Los312_Async_Model_Abstract
             $body = str_replace('{{' . $identifer . '}}', $html, $body);
         }
         $message = '|End insert block to body';
+        Mage::log($message);
+        $message = '|           PAGE LOADED          ';
+        Mage::log($message);
+        $message = '|                                |';
         Mage::log($message);
         $response->setBody($body);
     }

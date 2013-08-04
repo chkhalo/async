@@ -16,8 +16,8 @@ class Los312_Async_DownloaderController extends Mage_Core_Controller_Front_Actio
         $html = 'error';
         if ($identifer) {
            //$html = Mage::getModel('los312_async/storage')->getBlockHtml($identifer);
-           $html = Mage::getModel('los312_async/storage')->getStorage()->getBlockHtml($identifer);
-           //$html = Mage::getModel('los312_async/storage')->getStorage()->waitBlockHtml($identifer);
+           //$html = Mage::getModel('los312_async/storage')->getStorage()->getBlockHtml($identifer);
+           $html = Mage::getModel('los312_async/storage')->getStorage()->waitBlockHtml($identifer);
         }
         $message = '|AJAX| End DownloaderControlle';
         Mage::log($message);         

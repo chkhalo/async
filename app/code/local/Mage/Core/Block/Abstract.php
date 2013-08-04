@@ -881,13 +881,15 @@ abstract class Mage_Core_Block_Abstract extends Varien_Object
         if (Mage::getStoreConfig('advanced/modules_disable_output/' . $this->getModuleName())) {
             return '';
         }
-
+        
         /*async block start*/
-        if ($this->getAsync()&&!$this->getAsyncRenderFlag()) {
-                $this->_asyncIdentifer = '{{' . $this->getCacheKey() . '}}';
-                Mage::log('Insert Block playsholder of block: ' . $this->getBlockAlias());
-                return $this->_asyncIdentifer;
-        }
+        if (Mage::app()->getHelper('los312_async')->isActive()){
+            if ($this->getAsync()&&!$this->getAsyncRenderFlag()) {
+                    $this->_asyncIdentifer = '{{' . $this->getCacheKey() . '}}';
+                    Mage::log('Insert Block playsholder of block: ' . $this->getBlockAlias());
+                    return $this->_asyncIdentifer;
+            }            
+        } 
         /*async block end*/
         
         $html = $this->_loadCache();
